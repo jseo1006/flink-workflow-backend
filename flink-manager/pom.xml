@@ -28,7 +28,7 @@
         <!-- AWS SDK for Kinesis Analytics & S3 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>kinesisimport</artifactId>
+            <artifactId>kinesis</artifactId>
             <version>${aws.java.sdk.version}</version>
         </dependency>
          <dependency>
