@@ -1,0 +1,22 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - FLINK_MANAGER_URL=http://flink-manager:8081
+    depends_on:
+      - flink-manager
+
+  flink-manager:
+    build:
+      context: .
+      dockerfile: flink-manager/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - AWS_REGION=us-east-1
