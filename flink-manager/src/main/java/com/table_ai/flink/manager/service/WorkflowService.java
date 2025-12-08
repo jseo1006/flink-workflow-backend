@@ -8,6 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import com.table_ai.flink.manager.entity.Workflow;
+import com.table_ai.flink.manager.entity.WorkflowStatus;
+import com.table_ai.flink.manager.repository.WorkflowRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 public class WorkflowService {
 
@@ -15,16 +20,30 @@ public class WorkflowService {
     private final BuildService buildService;
     private final S3Service s3Service;
     private final AwsFlinkClient awsFlinkClient;
+    private final WorkflowRepository workflowRepository;
+    private final ObjectMapper objectMapper; // For JSON serialization
 
     public WorkflowService(CodeGeneratorService codeGeneratorService, BuildService buildService,
-            S3Service s3Service, AwsFlinkClient awsFlinkClient) {
+            S3Service s3Service, AwsFlinkClient awsFlinkClient, WorkflowRepository workflowRepository,
+            ObjectMapper objectMapper) {
         this.codeGeneratorService = codeGeneratorService;
         this.buildService = buildService;
         this.s3Service = s3Service;
         this.awsFlinkClient = awsFlinkClient;
+        this.workflowRepository = workflowRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public String deployWorkflow(WorkflowDefinition workflow) throws Exception {
+    public String deployWorkflow(WorkflowDefinition workflow, String userId) throws Exception {
+        // 0. Save Workflow Metadata to DB (DRAFT)
+        Workflow entity = new Workflow();
+        entity.setName(workflow.getName());
+        entity.setDescription(workflow.getDescription());
+        entity.setDefinitionJson(objectMapper.writeValueAsString(workflow));
+        entity.setStatus(WorkflowStatus.DRAFT);
+        entity.setUserId(userId);
+        workflowRepository.save(entity);
+
         // 1. Generate Code
         String javaCode = codeGeneratorService.generateJobCode(workflow);
 
@@ -42,6 +61,10 @@ public class WorkflowService {
 
         // 6. Deploy to AWS Managed Flink
         awsFlinkClient.deployApplication(workflow.getName(), s3Service.getBucketArn(), s3Path);
+
+        // 7. Update DB Status (DEPLOYED)
+        entity.setStatus(WorkflowStatus.DEPLOYED);
+        workflowRepository.save(entity);
 
         return "Job " + workflow.getName() + " deployed to AWS. S3 Path: " + s3Path;
     }

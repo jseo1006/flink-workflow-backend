@@ -24,6 +24,9 @@ public class Workflow {
     @Column(nullable = false)
     private WorkflowStatus status;
 
+    @Column(nullable = false)
+    private String userId; // Multi-tenancy support
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -79,6 +82,14 @@ public class Workflow {
 
     public void setStatus(WorkflowStatus status) {
         this.status = status;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public LocalDateTime getCreatedAt() {

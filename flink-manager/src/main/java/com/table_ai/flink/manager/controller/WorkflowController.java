@@ -3,6 +3,7 @@ package com.table_ai.flink.manager.controller;
 import com.table_ai.flink.manager.dto.WorkflowDefinition;
 import com.table_ai.flink.manager.service.WorkflowService;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/workflows")
@@ -15,9 +16,10 @@ public class WorkflowController {
     }
 
     @PostMapping("/deploy")
-    public String deployWorkflow(@RequestBody WorkflowDefinition workflow) {
+    public String deployWorkflow(@RequestBody WorkflowDefinition workflow, Principal principal) {
         try {
-            return workflowService.deployWorkflow(workflow);
+            String userId = principal.getName();
+            return workflowService.deployWorkflow(workflow, userId);
         } catch (Exception e) {
             e.printStackTrace();
             return "Deployment failed: " + e.getMessage();
