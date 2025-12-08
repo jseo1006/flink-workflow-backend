@@ -5,12 +5,11 @@ spring:
   application:
     name: flink-manager
   datasource:
-    url: jdbc:h2:mem:flinkdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:postgresql://postgres:5432/flinkdb
+    username: flinkuser
+    password: flinkpassword
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
 

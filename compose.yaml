@@ -7,6 +7,17 @@ services:
     ports:
       - "22181:2181"
 
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: flinkuser
+      POSTGRES_PASSWORD: flinkpassword
+      POSTGRES_DB: flinkdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     depends_on:
@@ -44,3 +55,7 @@ services:
       - CEP_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
       - kafka
+      - postgres
+
+volumes:
+  postgres_data:
