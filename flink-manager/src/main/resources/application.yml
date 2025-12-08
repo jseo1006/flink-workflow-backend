@@ -16,12 +16,12 @@ spring:
 
 # AWS Configuration (Placeholder - User must provide env vars or credentials file)
 aws:
-  region: us-east-1
+  region: ap-northeast-2
   kinesis:
     analytics:
-      application-name: my-flink-app
+      application-name: jwseo-flink-app
   s3:
-    bucket: my-flink-bucket
+    bucket: jwseo-flink
 
 # Kafka for CEP
 cep:
