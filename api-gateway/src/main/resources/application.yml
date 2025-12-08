@@ -11,6 +11,12 @@ spring:
           uri: ${FLINK_MANAGER_URL:http://localhost:8081}
           predicates:
             - Path=/api/**
+        - id: flink-manager-docs
+          uri: ${FLINK_MANAGER_URL:http://localhost:8081}
+          predicates:
+            - Path=/flink-manager/v3/api-docs
+          filters:
+            - RewritePath=/flink-manager/v3/api-docs, /v3/api-docs
       globalcors:
         cors-configurations:
           '[/**]':
@@ -21,3 +27,17 @@ spring:
               - PUT
               - DELETE
             allowedHeaders: "*"
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: api-gateway
+        url: /v3/api-docs
+      - name: flink-manager
+        url: /flink-manager/v3/api-docs
+
+app:
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:user}
+      password: ${SECURITY_USER_PASSWORD:password}

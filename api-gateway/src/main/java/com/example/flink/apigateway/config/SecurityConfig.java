@@ -7,6 +7,8 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
@@ -19,6 +21,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for API simplicity in this demo
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/login", "/logout").permitAll()
+                        .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .pathMatchers("/api/**").authenticated()
                         .anyExchange().authenticated())
                 .formLogin(formLogin -> {
@@ -28,12 +31,22 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.security.user.name:user}")
+    private String username;
+
+    @org.springframework.beans.factory.annotation.Value("${app.security.user.password:password}")
+    private String password;
+
     @Bean
-    public MapReactiveUserDetailsService userDetailsService() {
-        // Temporary in-memory user for testing
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public MapReactiveUserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
                 .roles("USER")
                 .build();
         return new MapReactiveUserDetailsService(user);
