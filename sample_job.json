@@ -1,0 +1,39 @@
+{
+    "name": "SampleFlinkJob",
+    "nodes": [
+        {
+            "id": "source1",
+            "type": "SOURCE",
+            "properties": {
+                "type": "kafka",
+                "topic": "input-topic"
+            }
+        },
+        {
+            "id": "process1",
+            "type": "PROCESS",
+            "properties": {
+                "function": "filter",
+                "condition": "value > 100"
+            }
+        },
+        {
+            "id": "sink1",
+            "type": "SINK",
+            "properties": {
+                "type": "kafka",
+                "topic": "output-topic"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source": "source1",
+            "target": "process1"
+        },
+        {
+            "source": "process1",
+            "target": "sink1"
+        }
+    ]
+}

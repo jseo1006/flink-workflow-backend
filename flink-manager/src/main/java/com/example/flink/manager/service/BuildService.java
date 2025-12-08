@@ -24,7 +24,18 @@ public class BuildService {
 
         System.out.println("Simulating build for: " + sourceFile.getName());
 
-        // Return a mock JAR for now to unblock deployment logic testing
-        return new File(projectDir.toFile(), "target/generated-job.jar");
+        // Create dummy target directory
+        File targetDir = new File(projectDir.toFile(), "target");
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+
+        // Create dummy JAR file
+        File jarFile = new File(targetDir, "generated-job.jar");
+        if (!jarFile.exists()) {
+            jarFile.createNewFile();
+        }
+
+        return jarFile;
     }
 }

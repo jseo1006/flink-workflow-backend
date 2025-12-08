@@ -8,9 +8,9 @@ spring:
     gateway:
       routes:
         - id: flink-manager
-          uri: http://localhost:8081
+          uri: ${FLINK_MANAGER_URL:http://localhost:8081}
           predicates:
-            - Path=/api/flink/**
+            - Path=/api/**
       globalcors:
         cors-configurations:
           '[/**]':

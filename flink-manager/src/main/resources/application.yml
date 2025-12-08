@@ -26,5 +26,5 @@ aws:
 # Kafka for CEP
 cep:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${CEP_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     topic: cep-rules-control
