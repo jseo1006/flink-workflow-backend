@@ -1,4 +1,4 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
 import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 import software.amazon.awssdk.services.cloudwatch.model.*;

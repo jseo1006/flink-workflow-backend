@@ -1,4 +1,4 @@
-package com.example.flink.apigateway.config;
+package com.table_ai.flink.apigateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
-import com.example.flink.manager.dto.WorkflowDefinition;
+import com.table_ai.flink.manager.dto.WorkflowDefinition;
 import com.squareup.javapoet.*;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ public class CodeGeneratorService {
 
     public String generateJobCode(WorkflowDefinition workflow) {
         String jobName = workflow.getName().replaceAll("\\s+", "");
-        String packageName = "com.example.flink.generated";
+        String packageName = "com.table_ai.flink.generated";
 
         // Main method builder
         MethodSpec.Builder mainBuilder = MethodSpec.methodBuilder("main")

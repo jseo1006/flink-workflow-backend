@@ -1,6 +1,6 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
-import com.example.flink.manager.dto.WorkflowDefinition;
+import com.table_ai.flink.manager.dto.WorkflowDefinition;
 import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
@@ -47,8 +47,8 @@ public class WorkflowService {
     }
 
     private File writeCodeToDisk(Path buildDir, String jobName, String code) throws IOException {
-        // Create full package path: src/main/java/com/example/flink/generated
-        Path packageDir = buildDir.resolve("src/main/java/com/example/flink/generated");
+        // Create full package path: src/main/java/com.table_ai/flink/generated
+        Path packageDir = buildDir.resolve("src/main/java/com.table_ai/flink/generated");
         Files.createDirectories(packageDir);
 
         Path filePath = packageDir.resolve(jobName + "Job.java");

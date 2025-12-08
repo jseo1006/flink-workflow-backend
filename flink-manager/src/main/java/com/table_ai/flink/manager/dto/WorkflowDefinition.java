@@ -1,4 +1,4 @@
-package com.example.flink.manager.dto;
+package com.table_ai.flink.manager.dto;
 
 import java.util.List;
 import java.util.Map;

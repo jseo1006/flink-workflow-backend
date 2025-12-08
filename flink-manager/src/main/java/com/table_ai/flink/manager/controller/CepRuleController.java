@@ -1,6 +1,6 @@
-package com.example.flink.manager.controller;
+package com.table_ai.flink.manager.controller;
 
-import com.example.flink.manager.service.CepRuleService;
+import com.table_ai.flink.manager.service.CepRuleService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

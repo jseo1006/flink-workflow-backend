@@ -1,4 +1,4 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
 import software.amazon.awssdk.services.kinesisanalyticsv2.KinesisAnalyticsV2Client;
 import software.amazon.awssdk.services.kinesisanalyticsv2.model.*;

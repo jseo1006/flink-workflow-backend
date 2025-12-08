@@ -1,4 +1,4 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;

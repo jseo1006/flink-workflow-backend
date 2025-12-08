@@ -1,6 +1,6 @@
-package com.example.flink.manager.controller;
+package com.table_ai.flink.manager.controller;
 
-import com.example.flink.manager.service.MetricService;
+import com.table_ai.flink.manager.service.MetricService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

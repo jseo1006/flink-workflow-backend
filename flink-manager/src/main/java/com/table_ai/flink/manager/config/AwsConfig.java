@@ -1,4 +1,4 @@
-package com.example.flink.manager.config;
+package com.table_ai.flink.manager.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.flink.apigateway;
+package com.table_ai.flink.apigateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

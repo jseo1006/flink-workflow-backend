@@ -1,4 +1,4 @@
-package com.example.flink.manager.service;
+package com.table_ai.flink.manager.service;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
