@@ -18,7 +18,9 @@ public class WorkflowController {
     @PostMapping("/deploy")
     public String deployWorkflow(@RequestBody WorkflowDefinition workflow, Principal principal) {
         try {
-            String userId = principal.getName();
+            // Fallback to "default-user" if Principal is null (e.g. running behind Gateway
+            // without token relay)
+            String userId = (principal != null) ? principal.getName() : "default-user";
             return workflowService.deployWorkflow(workflow, userId);
         } catch (Exception e) {
             e.printStackTrace();

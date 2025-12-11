@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-manager
+  namespace: flink-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-manager
+  template:
+    metadata:
+      labels:
+        app: flink-manager
+    spec:
+      containers:
+      - name: flink-manager
+        image: 335062484893.dkr.ecr.ap-northeast-2.amazonaws.com/flink-manager:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres:5432/flinkdb
+        - name: CEP_KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-svc:9093
+        # Credentials should ideally be secrets
+        - name: AWS_REGION
+          value: ap-northeast-2
+        - name: AWS_ROLE_ARN
+          value: arn:aws:iam::335062484893:role/eksctl-flink-backend-cluster-nodeg-NodeInstanceRole-rNLOTxohXu7q
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flink-manager
+  namespace: flink-backend
+spec:
+  ports:
+  - port: 8081
+  selector:
+    app: flink-manager

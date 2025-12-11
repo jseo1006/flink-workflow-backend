@@ -29,7 +29,7 @@ public class S3Service {
 
         s3Client.putObject(putOb, RequestBody.fromFile(jarFile));
 
-        return "s3://" + bucketName + "/" + key;
+        return key;
     }
 
     public String getBucketArn() {

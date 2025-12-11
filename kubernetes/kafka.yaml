@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+  namespace: flink-backend
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: wurstmeister/zookeeper
+        ports:
+        - containerPort: 2181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  namespace: flink-backend
+spec:
+  ports:
+  - port: 2181
+  selector:
+    app: zookeeper
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: flink-backend
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: wurstmeister/kafka
+        ports:
+        - containerPort: 9092
+        - containerPort: 9093
+        env:
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zookeeper:2181
+        - name: KAFKA_LISTENERS
+          value: INSIDE://:9093,OUTSIDE://:9092
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: INSIDE://kafka-svc:9093,OUTSIDE://afc2ab972e55840898b5bc1160d464b2-f6b61b40e1eb9327.elb.ap-northeast-2.amazonaws.com:9092
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: INSIDE
+        - name: KAFKA_CREATE_TOPICS
+          value: "cep-rules-control:1:1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc
+  namespace: flink-backend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9092
+    targetPort: 9092
+    protocol: TCP
+    name: external
+  - port: 9093
+    targetPort: 9093
+    protocol: TCP
+    name: internal
+  selector:
+    app: kafka

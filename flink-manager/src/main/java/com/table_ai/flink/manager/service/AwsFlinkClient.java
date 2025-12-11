@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class AwsFlinkClient {
 
+        @org.springframework.beans.factory.annotation.Value("${aws.role-arn}")
+        private String serviceExecutionRoleArn;
+
         private final KinesisAnalyticsV2Client kinesisClient;
 
         public AwsFlinkClient(KinesisAnalyticsV2Client kinesisClient) {
@@ -15,16 +18,14 @@ public class AwsFlinkClient {
         }
 
         public void deployApplication(String appName, String s3BucketArn, String s3ObjectKey) {
-                // This is a simplified deployment logic.
-                // 1. Check if app exists
-                // 2. If not, create. If yes, update.
-                // For brevity, showing Creation request structure.
+                // 1. Delete existing application if it exists (Force Update)
+                deleteApplicationIfExists(appName);
 
+                // 2. Create Application
                 CreateApplicationRequest request = CreateApplicationRequest.builder()
                                 .applicationName(appName)
-                                .runtimeEnvironment(RuntimeEnvironment.FLINK_1_15) // Adjust version
-                                .serviceExecutionRole("arn:aws:iam::123456789012:role/service-role/my-role") // Needs
-                                                                                                             // config
+                                .runtimeEnvironment(RuntimeEnvironment.FLINK_1_15)
+                                .serviceExecutionRole(serviceExecutionRoleArn)
                                 .applicationConfiguration(ApplicationConfiguration.builder()
                                                 .applicationCodeConfiguration(ApplicationCodeConfiguration.builder()
                                                                 .codeContent(CodeContent.builder()
@@ -39,20 +40,53 @@ public class AwsFlinkClient {
                                                 .build())
                                 .build();
 
-                try {
-                        kinesisClient.createApplication(request);
-                        System.out.println("Created AWS Flink Application: " + appName);
+                kinesisClient.createApplication(request);
+                System.out.println("Created AWS Flink Application: " + appName);
 
-                        // Start the application
-                        kinesisClient.startApplication(StartApplicationRequest.builder()
+                // 3. Start the application
+                kinesisClient.startApplication(StartApplicationRequest.builder()
+                                .applicationName(appName)
+                                .runConfiguration(RunConfiguration.builder().build())
+                                .build());
+        }
+
+        private void deleteApplicationIfExists(String appName) {
+                try {
+                        DescribeApplicationResponse describe = kinesisClient
+                                        .describeApplication(DescribeApplicationRequest.builder()
+                                                        .applicationName(appName)
+                                                        .build());
+
+                        long createTimestamp = describe.applicationDetail().createTimestamp().toEpochMilli(); // SDK v2
+                                                                                                              // uses
+                                                                                                              // Instant?
+                        // describe.applicationDetail().createTimestamp() returns Instant.
+                        // DeleteApplicationRequest builder takes Instant.
+
+                        System.out.println("Deleting existing application: " + appName);
+                        kinesisClient.deleteApplication(DeleteApplicationRequest.builder()
                                         .applicationName(appName)
-                                        .runConfiguration(RunConfiguration.builder().build())
+                                        .createTimestamp(describe.applicationDetail().createTimestamp())
                                         .build());
 
-                } catch (ResourceInUseException e) {
-                        System.out.println("Application already exists, skipping creation.");
-                        // Logic to update application code would go here (ListApplication,
-                        // UpdateApplication)
+                        // Wait for deletion
+                        while (true) {
+                                try {
+                                        Thread.sleep(2000);
+                                        kinesisClient.describeApplication(DescribeApplicationRequest.builder()
+                                                        .applicationName(appName)
+                                                        .build());
+                                        System.out.println("Waiting for deletion...");
+                                } catch (ResourceNotFoundException e) {
+                                        break; // Deleted
+                                }
+                        }
+                        System.out.println("Application deleted.");
+
+                } catch (ResourceNotFoundException e) {
+                        // Not found, safe to create
+                } catch (Exception e) {
+                        throw new RuntimeException("Failed to delete application", e);
                 }
         }
 }

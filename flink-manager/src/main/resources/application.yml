@@ -12,10 +12,13 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+  kafka:
+    bootstrap-servers: ${CEP_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 # AWS Configuration (Placeholder - User must provide env vars or credentials file)
 aws:
   region: ap-northeast-2
+  role-arn: ${AWS_ROLE_ARN}
   kinesis:
     analytics:
       application-name: jwseo-flink-app
@@ -25,5 +28,5 @@ aws:
 # Kafka for CEP
 cep:
   kafka:
-    bootstrap-servers: ${CEP_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${CEP_KAFKA_BOOTSTRAP_SERVERS:kafka-svc:9092}
     topic: cep-rules-control
